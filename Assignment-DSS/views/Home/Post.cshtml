@@ -1,0 +1,105 @@
+﻿@using Assignment_DSS.modules
+@model CommentAndContentDTO
+@inject IHttpContextAccessor context
+
+
+
+
+<div class="container">
+
+        <div class="row">
+            <div class="col-lg-8">
+
+            <h1><a href="">@Model.blog.Title</a></h1>
+            <p class="lead">
+                <i class="fa fa-user"></i> by <a href="#">@Model.blog.Username</a>
+                </p>
+                @{if (!string.IsNullOrEmpty(context.HttpContext.Session.GetString("Name")))
+                {
+                    if(context.HttpContext.Session.GetInt32("Id").Value == Model.blog.UserId)
+                    {
+                        <form asp-controller="Home" asp-action="DeletePost">
+                            <input type="hidden" name="Id" value="@Model.blog.Id" />
+                            <button type="submit" class="btn btn-dark m-1">Delete Post</button>
+                        </form>
+                    }
+                }
+                }
+                <hr>
+
+
+            <img src="@Model.blog.Img" class="rounded img-fluid" style="width:800px; height:350px;">
+
+                <hr>
+                <p class="lead">@Model.blog.Body</p>
+                <br/>                
+				
+                <!-- the comment box -->
+                @{
+                    if (!string.IsNullOrEmpty(context.HttpContext.Session.GetString("Name")))
+                    {
+                        <div class="well">
+                            <h4><i class="fa fa-paper-plane-o"></i> Leave a Comment:</h4>
+                            <form role="form" method="post" asp-controller="Home" asp-action="AddComment">
+                                <div class="form-group">
+                                    <input type="hidden" name="Id" value="@Model.blog.Id" />
+                                    <textarea name="CommentbBody" type="text" class="form-control" rows="3"></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-dark m-1"><i class="fa fa-reply"></i> Submit</button>
+                            </form>
+                        </div>
+                    };
+                }
+
+            </div>
+             <div class="container my-5 py-5">
+    <div class="row d-flex justify-content-center">
+      <div class="col-md-12 col-lg-10">
+        <div class="card text-dark">
+          <div class="card-body p-4">
+            <h4 class="mb-0">Recent comments</h4>
+            <p class="fw-light mb-4 pb-2">Latest Comments section by users</p>
+            @{
+                if(Model.AllComments.Count() > 0){
+                    foreach (var item in Model.AllComments)
+                {
+                        <div class="d-flex flex-start">
+                          <div>
+                            <h6 class="fw-bold mb-1">@item.UserName</h6>
+                            <p class="mb-0">
+                            @item.body
+                            </p>
+                            <div>
+                            @{
+                            if (!string.IsNullOrEmpty(context.HttpContext.Session.GetString("Name")))
+                            {
+                                if(context.HttpContext.Session.GetInt32("Id").Value == item.UserId) 
+                                {
+                                        <form asp-controller="Home" asp-action="DeleteComment">
+                                           <input type="hidden" name="ComId" value="@item.Id" />
+                                           <input type="hidden" name="Id" value="@Model.blog.Id" />
+                                           <button type="submit" class="btn btn-dark m-1">Delete comment</button>
+                                        </form>   
+                                }                             
+                            }
+                            }
+                            </div>
+                            <br />
+                          </div>
+                        </div>
+                        <hr class="my-0" />
+                        <br />
+                };
+                };
+                
+            }
+          </div>
+          <hr class="my-0" style="height: 1px;" />
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+ </div>
+
+
